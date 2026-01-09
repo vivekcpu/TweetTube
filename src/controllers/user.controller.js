@@ -24,7 +24,7 @@ if(
 throw new ApiError(400,"All fields are compulsory");
 }
 
-const existedUser = User.findOne({
+const existedUser = await User.findOne({
     $or: [{email},{username}]
 })
 
@@ -32,15 +32,15 @@ if(existedUser){
     throw new ApiError(409, "User with email or username already exists");
 }
 
-const avatarLoacalPath = req.files?.avatar[0]?.path;
-const coverImageLocalPath = req.files?.coverIMage?.path;
+let avatarLocalPath = req.files?.avatar[0]?.path;
+let coverImageLocalPath = req.files?.coverImage?.path;
 
-if(!avatarLoacalPath){
+if(!avatarLocalPath){
     throw new ApiError(400,"Avatar file is required");
 }
 
 const avatar = await uploadOnCloudinary(avatarLocalPath);
-const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+const coverImage = coverImageLocalPath? await uploadOnCloudinary(coverImageLocalPath):null;
 
 if(!avatar){
      throw new ApiError(400,"Avatar file is required");
